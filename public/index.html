@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominion Specialist Medical and Diagnostics</title>
+    <link rel="stylesheet" href="./css/home.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <img src="Styles/Pictures/logo.png" alt="">
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="About_Us.html">About Us</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li class="dropdown">
+                <span class="dropdown-toggle">Resources</span>
+                <ul class="dropdown-menu">
+                    <li><a href="Dominion-Class.html">Dominion Class</a></li>
+                    <li><a href="news.html">Dominion News</a></li>
+                </ul>
+            </li>
+        </ul>
+        <button class="header-button" onclick="window.location.href='book_appointment.html'">Book an Appointment</button>
+
+
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <div class="menu-overlay"></div>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Dominion Specialist Medical and Diagnostics Center</h1>
+                <p>Healthcare. Hospitality. Humaneness</p>
+                <a href="About_Us.html" class="cta-button">Learn More</a>
+            </div>
+            <div class="info-bar">
+                <div class="info-text">We provide a comprehensive range of medical services</div>
+                <a href="book_appointment.html" class="info-button">Book an Appointment</a>
+            </div>
+        </div>
+    </section>
+
+    <hr>
+
+    <section class="about-us container">
+        <div class="about-text">
+            <h2><strong>Dominion Specialist</strong></h2>
+            <p>At Dominion Specialist, we are committed to providing exceptional care and services to our patients. Our dedicated team of medical professionals is here to support you with a wide range of healthcare services, ensuring that you receive the best treatment possible. Our state-of-the-art facilities and compassionate staff work together to create a comfortable and healing environment.</p>
+            <p>From routine check-ups to specialized treatments, Dominion Specialist Medical and Diagnostics offers comprehensive medical care tailored to meet your needs. We prioritize your health and well-being, striving to make every visit a positive experience.</p>
+            <a href="About_Us.html" class="more-about-button">More About Us</a>
+        </div>
+        <div class="about-image">
+            <img src="Styles/Pictures/Picture1 (3).jpeg" alt="About Us Image">
+        </div>
+    </section>
+
+    <hr>
+
+    <section class="features container">
+        <div class="feature">
+            <div class="feature-icon"></div>
+            <h3>Experienced Doctors</h3>
+            <p>Our team of highly trained doctors is here to provide you with the best medical care.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon"></div>
+            <h3>Advanced Facilities</h3>
+            <p>We use state-of-the-art technology to diagnose and treat a wide range of medical conditions.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon"></div>
+            <h3>Patient Care</h3>
+            <p>We focus on providing personalized care tailored to meet the unique needs of each patient.</p>
+        </div>
+    </section>
+
+    <section class="appointment-info-section container">
+        <div class="appointment-info">
+            <h2>Book an Appointment</h2>
+            <p>At Dominion Specialist, your health and convenience are our top priorities. Booking an appointment with us is quick and easy! Whether you're scheduling a routine check-up or a consultation with a specialist, we are here to provide you with quality healthcare.
+                Simply fill out the appointment form with your details, and our team will get back to you as soon as possible to confirm your booking. You can also call or email us directly if you have any specific requests or need assistance. We look forward to serving you and ensuring you receive the best care possible.</p>
+            <a href="book_appointment.html" class="cta-button">Book Now</a>
+        </div>
+        <div class="map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m24!1m8!1m3!1d3954.2524416425213!2d5.229602776187937!3d7.655983422236309!3m2!1i1024!2i768!4f13.1!4m13!3e2!4m5!1s0x1047e4ad854dbed5%3A0x5dba422ee96577f3!2sAfe%20Babalola%20Civic%20Center%2C%20M64H%2BHX6%2C%20Ado%20Ekiti%20360102%2C%20Ekiti!3m2!1d7.6565110999999995!2d5.2299744!4m5!1s0x1047e4ad854dbed5%3A0x5dba422ee96577f3!2sAfe%20Babalola%20Civic%20Center%2C%20M64H%2BHX6%2C%20Ado%20Ekiti%20360102%2C%20Ekiti!3m2!1d7.6565110999999995!2d5.2299744!5e0!3m2!1sen!2sng!4v1726440004808!5m2!1sen!2sng" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Dominion Specialist Medical and Diagnostics. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            const menuOverlay = document.querySelector('.menu-overlay');
+            const body = document.body;
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdown = document.querySelector('.dropdown');
+            
+            // Toggle mobile menu
+            mobileMenuToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navLinks.classList.toggle('active');
+                menuOverlay.classList.toggle('active');
+                
+                if (navLinks.classList.contains('active')) {
+                    body.style.overflow = 'hidden';
+                } else {
+                    body.style.overflow = '';
+                }
+            });
+            
+            // Close menu when clicking on the overlay
+            menuOverlay.addEventListener('click', function() {
+                mobileMenuToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                dropdown.classList.remove('active');
+                body.style.overflow = '';
+            });
+            
+            // Close menu when clicking on a link
+            const menuLinks = document.querySelectorAll('.nav-links li a');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenuToggle.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    menuOverlay.classList.remove('active');
+                    dropdown.classList.remove('active');
+                    body.style.overflow = '';
+                });
+            });
+            
+            // Toggle dropdown on mobile
+            dropdownToggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    dropdown.classList.toggle('active');
+                }
+            });
+            
+            // Add animation to menu items
+            menuLinks.forEach((link, index) => {
+                link.style.animation = `fadeInUp 0.3s ease forwards ${index * 0.1 + 0.2}s`;
+                link.style.opacity = '0';
+            });
+        });
+    </script>
+</body>
+</html>

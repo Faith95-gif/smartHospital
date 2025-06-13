@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Dominion Specialist News</title>
+  <meta name="description" content="Admin dashboard for managing news articles.">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="admin/admin.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="flex items-center">
+        <div class="hamburger" id="hamburger-btn">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <a href="/admin" class="logo">Dominion<span> Specialist</span> Hospital</a>
+      </div>
+
+      <nav class="nav" id="mobile-nav">
+        <a href="/" class="nav-item" target="_blank">
+          <i class="fas fa-external-link-alt"></i> View Site
+        </a>
+        <a href="#" class="nav-item" id="dark-mode-toggle">
+          <i class="fas fa-moon"></i> Toggle Theme
+        </a>
+        <a href="#" class="nav-item btn btn-outline" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" id="mobile-overlay"></div>
+
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h3><i class="fas fa-user-shield"></i> Welcome, <span id="admin-name">Admin</span></h3>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item">
+          <a href="/admin" class="sidebar-nav-link active">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="/admin/articles.html" class="sidebar-nav-link">
+            <i class="fas fa-newspaper"></i> All Articles
+          </a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="/admin/create-article.html" class="sidebar-nav-link">
+            <i class="fas fa-plus-circle"></i> Create Article
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+      <div class="dashboard-header">
+        <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+        <p>Welcome to your admin dashboard. Here's an overview of your content management system.</p>
+      </div>
+      
+      <!-- Loading Indicator -->
+      <div id="loading-indicator" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading dashboard data...</p>
+      </div>
+      
+      <!-- Stats -->
+      <section class="mb-6" id="stats-section" style="display: none;">
+        <h2 class="mb-4"><i class="fas fa-analytics"></i> Overview</h2>
+        <div class="stats-grid" id="dashboard-stats">
+          <div class="stat-card">
+            <div class="stat-title"><i class="fas fa-file-alt"></i> Total Articles</div>
+            <div class="stat-value" id="total-articles">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title"><i class="fas fa-check-circle"></i> Published</div>
+            <div class="stat-value" id="published-articles">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title"><i class="fas fa-star"></i> Featured</div>
+            <div class="stat-value" id="featured-articles">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title"><i class="fas fa-eye"></i> Total Views</div>
+            <div class="stat-value" id="total-views">0</div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Recent Articles -->
+      <section class="mb-6" id="articles-section" style="display: none;">
+        <div class="flex justify-between items-center mb-4">
+          <h2><i class="fas fa-clock"></i> Recent Articles</h2>
+          <a href="/admin/create-article.html" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New
+          </a>
+        </div>
+        
+        <div class="table-responsive" id="recent-articles">
+          <table class="table">
+            <thead>
+              <tr>
+                <th><i class="fas fa-heading"></i> Title</th>
+                <th><i class="fas fa-tags"></i> Category</th>
+                <th><i class="fas fa-calendar"></i> Date</th>
+                <th><i class="fas fa-eye"></i> Views</th>
+                <th><i class="fas fa-info-circle"></i> Status</th>
+                <th><i class="fas fa-cogs"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody id="articles-table-body">
+            </tbody>
+          </table>
+        </div>
+      </section>
+      
+      <!-- Quick Actions -->
+      <section id="actions-section" style="display: none;">
+        <h2 class="mb-4"><i class="fas fa-bolt"></i> Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="/admin/create-article.html" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> Create New Article
+          </a>
+          <a href="/admin/articles.html" class="btn btn-outline">
+            <i class="fas fa-list"></i> Manage All Articles
+          </a>
+        </div>
+      </section>
+
+      <!-- Error Message -->
+      <div id="error-message" class="error-container" style="display: none;">
+        <div class="error-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>Unable to Load Data</h3>
+        <p>There was an error loading the dashboard data. Please try refreshing the page.</p>
+        <button class="btn btn-primary" onclick="loadDashboardData()">
+          <i class="fas fa-refresh"></i> Retry
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Global variables to store article data
+    let articlesData = [];
+    let dashboardStats = {
+      totalArticles: 0,
+      publishedArticles: 0,
+      featuredArticles: 0,
+      totalViews: 0
+    };
+
+    // Mobile Menu Toggle
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    const sidebar = document.getElementById('sidebar');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+
+    hamburgerBtn.addEventListener('click', () => {
+      hamburgerBtn.classList.toggle('active');
+      mobileNav.classList.toggle('active');
+      sidebar.classList.toggle('active');
+      mobileOverlay.classList.toggle('active');
+    });
+
+    // Close mobile menu when clicking overlay
+    mobileOverlay.addEventListener('click', () => {
+      hamburgerBtn.classList.remove('active');
+      mobileNav.classList.remove('active');
+      sidebar.classList.remove('active');
+      mobileOverlay.classList.remove('active');
+    });
+
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+      
+      const icon = darkModeToggle.querySelector('i');
+      if (body.dataset.theme === 'dark') {
+        icon.className = 'fas fa-sun';
+        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+      } else {
+        icon.className = 'fas fa-moon';
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+      }
+    });
+
+    // Close mobile menu when clicking nav links
+    document.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          hamburgerBtn.classList.remove('active');
+          mobileNav.classList.remove('active');
+          sidebar.classList.remove('active');
+          mobileOverlay.classList.remove('active');
+        }
+      });
+    });
+
+    // Function to create invisible iframe and extract data
+    function loadArticlesData() {
+      return new Promise((resolve, reject) => {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = '/admin/articles.html';
+        
+        iframe.onload = function() {
+          try {
+            // Wait for dynamic content to load
+            setTimeout(() => {
+              const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+              const articlesTable = iframeDoc.querySelector('#articles-table');
+              
+              if (!articlesTable) {
+                throw new Error('Articles table not found');
+              }
+
+              const rows = articlesTable.querySelectorAll('tr');
+              const articles = [];
+              let totalViews = 0;
+              let publishedCount = 0;
+              let featuredCount = 0;
+
+              rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 5) {
+                  const title = cells[0].textContent.trim();
+                  const category = cells[1].textContent.trim();
+                  const date = cells[2].textContent.trim();
+                  const views = parseInt(cells[3].textContent.trim()) || 0;
+                  const statusCell = cells[4];
+                  const status = statusCell.textContent.toLowerCase().includes('published') ? 'Published' : 'Draft';
+                  
+                  // Check if featured (you may need to adjust this logic based on your actual implementation)
+                  const isFeatured = statusCell.innerHTML.toLowerCase().includes('featured') || 
+                                   statusCell.innerHTML.toLowerCase().includes('star');
+                  
+                  articles.push({
+                    title,
+                    category,
+                    date,
+                    views,
+                    status,
+                    featured: isFeatured
+                  });
+
+                  totalViews += views;
+                  if (status === 'Published') publishedCount++;
+                  if (isFeatured) featuredCount++;
+                }
+              });
+
+              dashboardStats = {
+                totalArticles: articles.length,
+                publishedArticles: publishedCount,
+                featuredArticles: featuredCount,
+                totalViews: totalViews
+              };
+
+              articlesData = articles;
+              document.body.removeChild(iframe);
+              resolve({ articles, stats: dashboardStats });
+            }, 2000); // Wait 2 seconds for dynamic content
+          } catch (error) {
+            document.body.removeChild(iframe);
+            reject(error);
+          }
+        };
+
+        iframe.onerror = function() {
+          document.body.removeChild(iframe);
+          reject(new Error('Failed to load articles page'));
+        };
+
+        document.body.appendChild(iframe);
+      });
+    }
+
+    // Function to animate counter values
+    function animateValue(element, start, end, duration) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const value = Math.floor(progress * (end - start) + start);
+        
+        if (element.id === 'total-views' && end >= 1000) {
+          element.innerHTML = (value / 1000).toFixed(1) + 'K';
+        } else {
+          element.innerHTML = value;
+        }
+        
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    // Function to update dashboard stats
+    function updateDashboardStats() {
+      const statsElements = {
+        'total-articles': dashboardStats.totalArticles,
+        'published-articles': dashboardStats.publishedArticles,
+        'featured-articles': dashboardStats.featuredArticles,
+        'total-views': dashboardStats.totalViews
+      };
+
+      Object.entries(statsElements).forEach(([id, value], index) => {
+        const element = document.getElementById(id);
+        setTimeout(() => {
+          animateValue(element, 0, value, 2000);
+        }, index * 200);
+      });
+    }
+
+    // Function to populate articles table
+    function populateArticlesTable() {
+      const tableBody = document.getElementById('articles-table-body');
+      tableBody.innerHTML = '';
+
+      // Show only recent articles (last 5)
+      const recentArticles = articlesData.slice(0, 5);
+
+      recentArticles.forEach(article => {
+        const row = document.createElement('tr');
+        const statusClass = article.status === 'Published' ? 'status-published' : 'status-draft';
+        
+        row.innerHTML = `
+          <td>${article.title}</td>
+          <td>${article.category}</td>
+          <td>${article.date}</td>
+          <td>${article.views}</td>
+          <td><span class="status-badge ${statusClass}">${article.status}</span></td>
+          <td>
+            <a href="#" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+              <i class="fas fa-edit"></i> Edit
+            </a>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Function to show content sections
+    function showContent() {
+      document.getElementById('loading-indicator').style.display = 'none';
+      document.getElementById('stats-section').style.display = 'block';
+      document.getElementById('articles-section').style.display = 'block';
+      document.getElementById('actions-section').style.display = 'block';
+    }
+
+    // Function to show error
+    function showError() {
+      document.getElementById('loading-indicator').style.display = 'none';
+      document.getElementById('error-message').style.display = 'block';
+    }
+
+    // Main function to load dashboard data
+    function loadDashboardData() {
+      // Hide error message and show loading
+      document.getElementById('error-message').style.display = 'none';
+      document.getElementById('loading-indicator').style.display = 'block';
+      
+      loadArticlesData()
+        .then(data => {
+          populateArticlesTable();
+          updateDashboardStats();
+          showContent();
+        })
+        .catch(error => {
+          console.error('Error loading dashboard data:', error);
+          showError();
+        });
+    }
+
+    // Load data when page loads
+    window.addEventListener('load', () => {
+      loadDashboardData();
+    });
+
+    // Refresh data every 30 seconds
+    setInterval(() => {
+      loadArticlesData()
+        .then(data => {
+          populateArticlesTable();
+          updateDashboardStats();
+        })
+        .catch(error => {
+          console.error('Error refreshing dashboard data:', error);
+        });
+    }, 30000);
+
+    // Sidebar navigation
+    document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        document.querySelectorAll('.sidebar-nav-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove('active');
+          mobileOverlay.classList.remove('active');
+          hamburgerBtn.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+<style>
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Light theme */
+      --primary-color: #667eea;
+      --primary-dark: #5a67d8;
+      --primary-light: #764ba2;
+      --secondary-color: #f093fb;
+      --accent-color: #4facfe;
+      --success-color: #48bb78;
+      --warning-color: #ed8936;
+      --error-color: #f56565;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #2d3748;
+      --text-secondary: #718096;
+      --border-color: #e2e8f0;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --border-color: #334155;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: all 0.3s ease;
+    }
+
+    /* Header Styles */
+    .header {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      height: 70px;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-decoration: none;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo span {
+      color: var(--secondary-color);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-item {
+      text-decoration: none;
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-item:hover {
+      color: var(--primary-color);
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: var(--text-primary);
+      margin: 3px 0;
+      transition: 0.3s;
+      border-radius: 3px;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(-45deg) translate(-5px, 6px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(45deg) translate(-5px, -6px);
+    }
+
+    /* Dashboard Layout */
+    .dashboard {
+      display: flex;
+      margin-top: 70px;
+      min-height: calc(100vh - 70px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      position: fixed;
+      left: 0;
+      top: 70px;
+      height: calc(100vh - 70px);
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      z-index: 900;
+    }
+
+    .sidebar-header {
+      padding: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--gradient-1);
+      color: white;
+    }
+
+    .sidebar-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      padding: 1rem 0;
+    }
+
+    .sidebar-nav-item {
+      margin: 0.5rem 1rem;
+    }
+
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar-nav-link:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-1);
+      transition: left 0.3s ease;
+      z-index: -1;
+      opacity: 0.1;
+    }
+
+    .sidebar-nav-link:hover:before,
+    .sidebar-nav-link.active:before {
+      left: 0;
+    }
+
+    .sidebar-nav-link:hover,
+    .sidebar-nav-link.active {
+      color: var(--primary-color);
+      transform: translateX(5px);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar-nav-link.active {
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    /* Main Content */
+    .dashboard-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 2rem;
+      background: var(--bg-color);
+      min-height: calc(100vh - 70px);
+    }
+
+    .dashboard-header {
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .dashboard-header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+
+    .dashboard-header p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid var(--border-color);
+    }
+
+    .stat-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-1);
+    }
+
+    .stat-card:nth-child(2):before {
+      background: var(--gradient-2);
+    }
+
+    .stat-card:nth-child(3):before {
+      background: var(--gradient-3);
+    }
+
+    .stat-card:nth-child(4):before {
+      background: var(--gradient-4);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-title {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      padding: 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .table th {
+      background: var(--gradient-1);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+
+    .table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(102, 126, 234, 0.05);
+      transform: scale(1.01);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary {
+      background: var(--gradient-1);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Grid System */
+    .grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .grid-cols-1 {
+      grid-template-columns: 1fr;
+    }
+
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Utilities */
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .text-center { text-align: center; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+
+      .nav {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background: var(--card-bg);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        padding: 2rem;
+        transition: left 0.3s ease;
+        box-shadow: var(--shadow-lg);
+        z-index: 999;
+      }
+
+      .nav.active {
+        left: 0;
+      }
+
+      .nav-item {
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 1rem;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .dashboard-content {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .dashboard-header h1 {
+        font-size: 2rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .stat-card {
+        padding: 1.5rem;
+      }
+
+      .table-responsive {
+        overflow-x: auto;
+      }
+
+      .grid-cols-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-container {
+        padding: 0.5rem 1rem;
+      }
+
+      .dashboard-content {
+        padding: 0.5rem;
+      }
+
+      .dashboard-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+      }
+
+      .table th,
+      .table td {
+        padding: 1rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .stat-card {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+    .sidebar-nav-item {
+      animation: slideInLeft 0.6s ease forwards;
+    }
+
+    .sidebar-nav-item:nth-child(1) { animation-delay: 0.1s; }
+    .sidebar-nav-item:nth-child(2) { animation-delay: 0.2s; }
+    .sidebar-nav-item:nth-child(3) { animation-delay: 0.3s; }
+    .sidebar-nav-item:nth-child(4) { animation-delay: 0.4s; }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(102, 126, 234, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Status badges */
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .status-published {
+      background: rgba(72, 187, 120, 0.2);
+      color: var(--success-color);
+    }
+
+    .status-draft {
+      background: rgba(237, 137, 54, 0.2);
+      color: var(--warning-color);
+    }
+
+    /* Mobile overlay */
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 800;
+      backdrop-filter: blur(5px);
+    }
+
+    .mobile-overlay.active {
+      display: block;
+    }
+</style>

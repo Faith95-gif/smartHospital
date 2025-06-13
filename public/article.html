@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dominion News</title>
+  <link rel="icon" type="image/svg+xml" href="/vite.svg">
+  <link rel="stylesheet" href="css/article.css">
+  <script src="Scripts/article.js"></script>
+  <meta name="description" content="Read the full article and stay informed with the latest news.">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="/" class="logo">Dominion<span>Specialist</span></a>
+      
+      <nav class="nav">
+        <a href="/" class="nav-item">Home</a>
+        <a href="#" class="nav-item" id="dark-mode-toggle">Toggle Theme</a>
+        <a href="/login" class="nav-item btn btn-primary">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="container">
+      <div class="article-container">
+        <!-- Article content will be loaded here via JavaScript -->
+        <div class="text-center p-6">
+          <div class="loader"></div>
+          <p>Loading article...</p>
+        </div>
+      </div>
+      
+      <!-- Related Articles -->
+      <section class="mt-6 mb-6">
+        <h2>You Might Also Like</h2>
+        <div class="articles-grid" id="related-articles">
+         
+         
+    
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-primary-color text-white p-6">
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <h3 class="text-xl font-bold mb-4">Dominion<span class="text-accent-color">News</span></h3>
+          <p>Your trusted source for the latest news and updates from around the world.</p>
+        </div>
+        <div>
+          <h4 class="text-lg font-bold mb-3">Categories</h4>
+          <ul>
+            <li class="mb-2"><a href="news.html" class="hover:text-accent-color">General</a></li>
+        
+          </ul>
+        </div>
+        <div style="display: none;">
+          <h4 class="text-lg font-bold mb-3">Connect</h4>
+          <p  class="mb-2">Sign up for our newsletter to get the latest updates directly to your inbox.</p>
+          <form class="mt-3">
+            <input type="email" placeholder="Your email address" class="form-control mb-2">
+            <button type="submit" class="btn btn-accent">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 mt-6 pt-6 text-center">
+        <p>&copy; 2025 Dominion Specialist. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+</body>
+</html>

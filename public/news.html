@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dominion Specialist Medical and Diagnostics</title>
+
+  <meta name="description" content="">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/news.css">
+</head>
+<body>
+   <!-- Header -->
+   <header class="header">
+    <div class="container header-container">
+       <img style="height: 70px;" src="Styles/Pictures/logo.png" alt="Dominion Hospital Logo">
+      
+      <nav class="nav">
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="About_Us.html" class="nav-item">About Us</a>
+        <div class="dropdown">
+          <a href="#" class="nav-item">Resources <i class="fas fa-chevron-down dropdown-arrow"></i></a>
+          <div class="dropdown-content">
+            <a href="health-resources.html" class="dropdown-item">Health Resources</a>
+            <a href="patient-portal.html" class="dropdown-item">Patient Portal</a>
+          </div>
+        </div>
+        <a href="contact.html" class="nav-item">Contact Us</a>
+        
+       <a href="book_appointment.html" class="nav-item btn btn-primary">Book an Appointment</a>
+        <a href="/login" class="nav-item btn btn-primary"><i class="fas fa-user"></i> Admin</a>
+      </nav>
+
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <nav class="mobile-nav" id="mobile-nav">
+      <a href="index.html" class="nav-item">Home</a>
+      <a href="About_Us.html" class="nav-item">About Us</a>
+      <div class="mobile-dropdown">
+        <a href="#" class="nav-item" id="mobile-resources">Resources <i class="fas fa-chevron-down dropdown-arrow mobile-dropdown-arrow"></i></a>
+        <div class="mobile-dropdown-content">
+        
+          <a href="Dominion-Class.html" class="mobile-dropdown-item">Maternal Education</a>
+        </div>
+      </div>
+      <a href="contact.html" class="nav-item">Contact Us</a>
+      <a href="book_appointment.html" class="nav-item"> Book an Appointment</a>
+      <a href="/login" class="nav-item"><i class="fas fa-user"></i> Admin</a>
+    </nav>
+  </header>
+  <!-- Main Content -->
+   <main class="main">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Dominion Specialist Medical and Diagnostics Center
+</h1>
+          <p>Healthcare. Hospitality. Humaneness</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Articles -->
+    <section class="container mb-6">
+      <h2>Featured Articles</h2>
+      <div class="articles-grid" id="featured-articles">
+       
+        
+  
+      </div>
+    </section>
+
+    <!-- Latest Articles -->
+    <section class="container mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2>Latest News</h2>
+        <div class="flex">
+          <select id="category-filter" class="form-control mr-2">
+            <option value="All">All Categories</option>
+           
+          </select>
+          <input type="text" id="search-input" placeholder="Search articles..." class="form-control">
+        </div>
+      </div>
+      
+      <div class="articles-grid" id="articles-container">
+        <!-- Articles will be loaded here via JavaScript -->
+        <!-- Placeholder for design -->
+     
+        
+   
+      </div>
+      
+      <div class="text-center mt-6">
+        <button id="load-more" class="btn btn-primary">Load More</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-primary-color text-white p-6">
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <h3 class="text-xl font-bold mb-4">Dominion<span class="text-accent-color">Specialist</span></h3>
+          <p>Healthcare. Hospitality. Humaneness</p>
+        </div>
+        <div>
+         
+        
+        </div>
+        <div style="display: none;">
+          <h4 class="text-lg font-bold mb-3">Connect</h4>
+          <p class="mb-2">Sign up for our newsletter to get the latest updates directly to your inbox.</p>
+          <form class="mt-3">
+            <input type="email" placeholder="Your email address" class="form-control mb-2">
+            <button type="submit" class="btn btn-accent">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 mt-6 pt-6 text-center">
+        <p>&copy; 2025 Dominion Specialist. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <!-- Scripts -->
+  <script>
+    // Hamburger Menu Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburger = document.getElementById('hamburger');
+      const mobileNav = document.getElementById('mobile-nav');
+      const mobileResources = document.getElementById('mobile-resources');
+      const mobileDropdown = mobileResources.parentElement;
+      
+      // Toggle mobile menu
+      hamburger.addEventListener('click', function() {
+        hamburger.classList.toggle('active');
+        mobileNav.classList.toggle('active');
+      });
+      
+      // Handle mobile dropdown toggle
+      mobileResources.addEventListener('click', function(e) {
+        e.preventDefault();
+        mobileDropdown.classList.toggle('active');
+      });
+      
+      // Close mobile menu when clicking on a nav item (except dropdown toggle)
+      const mobileNavItems = mobileNav.querySelectorAll('.nav-item:not(#mobile-resources), .mobile-dropdown-item');
+      mobileNavItems.forEach(item => {
+        item.addEventListener('click', function() {
+          hamburger.classList.remove('active');
+          mobileNav.classList.remove('active');
+          mobileDropdown.classList.remove('active');
+        });
+      });
+      
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', function(event) {
+        const isClickInsideNav = mobileNav.contains(event.target);
+        const isClickOnHamburger = hamburger.contains(event.target);
+        
+        if (!isClickInsideNav && !isClickOnHamburger && mobileNav.classList.contains('active')) {
+          hamburger.classList.remove('active');
+          mobileNav.classList.remove('active');
+          mobileDropdown.classList.remove('active');
+        }
+      });
+      
+      // Close mobile menu on window resize (when switching to desktop)
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+          hamburger.classList.remove('active');
+          mobileNav.classList.remove('active');
+          mobileDropdown.classList.remove('active');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

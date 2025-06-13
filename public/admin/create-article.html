@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Article - Dominion Admin Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/vite.svg">
+  <link rel="stylesheet" href="../css/create-article.css">
+  <meta name="description" content="Create a new article in the admin dashboard.">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="flex items-center">
+        <button id="mobile-menu-toggle" class="btn-icon mr-3 lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <a href="/admin" class="logo">Dominion<span> Specialist</span></a>
+      </div>
+      
+      <nav class="nav">
+        <a href="/" class="nav-item" target="_blank">View Site</a>
+        <a href="#" class="nav-item" id="dark-mode-toggle">Toggle Theme</a>
+        <a href="#" class="nav-item btn btn-outline" id="logout-btn">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Mobile Overlay -->
+  <div id="mobile-overlay" class="mobile-overlay"></div>
+
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h3>Welcome, <span id="admin-name">Admin</span></h3>
+      </div>
+      
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item">
+          <a href="/admin" class="sidebar-nav-link">Dashboard</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="/admin/articles.html" class="sidebar-nav-link">All Articles</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="/admin/create-article.html" class="sidebar-nav-link active">Create Article</a>
+        </li>
+  
+      </ul>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="dashboard-content">
+      <div class="dashboard-header">
+        <h1 class="page-title">Create Article</h1>
+        <p>Create a new news article to publish on Dominion Specialist News Feed</p>
+      </div>
+      
+      <!-- Create Article Form -->
+      <section>
+        <form id="article-form" enctype="multipart/form-data">
+          <div id="error-msg" class="error-message mb-4" style="display: none;"></div>
+          
+          <div class="form-group">
+            <label for="article-title" class="form-label">Title</label>
+            <input type="text" id="article-title" name="title" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="article-subtitle" class="form-label">Subtitle (optional)</label>
+            <input type="text" id="article-subtitle" name="subtitle" class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="article-category" class="form-label">Category</label>
+            <select id="article-category" name="category" class="form-control form-select" required>
+              <!-- Categories will be loaded via JavaScript -->
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Media Files</label>
+            <div class="media-uploader">
+              <input type="file" id="media-upload" name="media" accept="image/*,video/*" multiple class="form-control">
+              <p class="text-light mt-1">Drag and drop files into the editor below, or select files to upload. First image will be used as the featured image.</p>
+              <div id="media-preview" class="media-preview"></div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="article-content" class="form-label">Content</label>
+            <div class="editor-container">
+              <div id="editor-toolbar" class="editor-toolbar">
+                <!-- Editor buttons will be loaded via JavaScript -->
+              </div>
+              <div id="article-content" class="editor-content" contenteditable="true"></div>
+              <input type="hidden" id="article-content-hidden" name="content">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="article-tags" class="form-label">Tags (comma separated)</label>
+            <input type="text" id="article-tags" name="tags" class="form-control" placeholder="family medicine, general medicine..">
+          </div>
+          
+          <div class="form-group">
+            <div class="form-check">
+              <input type="checkbox" id="article-published" name="published" value="true" class="form-check-input" checked>
+              <label for="article-published" class="form-check-label">Publish immediately</label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <div class="form-check">
+              <input type="checkbox" id="article-featured" name="featured" value="true" class="form-check-input">
+              <label for="article-featured" class="form-check-label">Feature this article</label>
+            </div>
+          </div>
+          
+          <div class="flex justify-between mt-6">
+            <button type="button" class="btn btn-outline" onclick="window.location.href='/admin/articles.html'">Cancel</button>
+            <button type="submit" id="submit-article" class="btn btn-primary">Save Article</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
+
+<script>
+// Theme Management
+class ThemeManager {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    // Load saved theme or default to light
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    this.setTheme(savedTheme);
+    
+    // Setup theme toggle
+    const themeToggle = document.getElementById('dark-mode-toggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.toggleTheme();
+      });
+    }
+  }
+
+  setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    // Update toggle text
+    const themeToggle = document.getElementById('dark-mode-toggle');
+    if (themeToggle) {
+      themeToggle.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    }
+  }
+
+  toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    this.setTheme(newTheme);
+  }
+}
+
+// Mobile Menu Management
+class MobileMenuManager {
+  constructor() {
+    this.sidebar = document.getElementById('sidebar');
+    this.overlay = document.getElementById('mobile-overlay');
+    this.toggleButton = document.getElementById('mobile-menu-toggle');
+    this.init();
+  }
+
+  init() {
+    // Mobile menu toggle
+    if (this.toggleButton) {
+      this.toggleButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.toggleSidebar();
+      });
+    }
+
+    // Close sidebar when clicking overlay
+    if (this.overlay) {
+      this.overlay.addEventListener('click', () => {
+        this.closeSidebar();
+      });
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 1024) {
+        if (this.sidebar && !this.sidebar.contains(e.target) && 
+            this.toggleButton && !this.toggleButton.contains(e.target)) {
+          this.closeSidebar();
+        }
+      }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        this.closeSidebar();
+      }
+    });
+
+    // Prevent sidebar links from closing menu immediately
+    if (this.sidebar) {
+      const sidebarLinks = this.sidebar.querySelectorAll('.sidebar-nav-link');
+      sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          setTimeout(() => this.closeSidebar(), 150);
+        });
+      });
+    }
+  }
+
+  toggleSidebar() {
+    if (this.sidebar && this.sidebar.classList.contains('open')) {
+      this.closeSidebar();
+    } else {
+      this.openSidebar();
+    }
+  }
+
+  openSidebar() {
+    if (this.sidebar) {
+      this.sidebar.classList.add('open');
+    }
+    if (this.overlay) {
+      this.overlay.classList.add('active');
+    }
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeSidebar() {
+    if (this.sidebar) {
+      this.sidebar.classList.remove('open');
+    }
+    if (this.overlay) {
+      this.overlay.classList.remove('active');
+    }
+    document.body.style.overflow = '';
+  }
+}
+
+// Form Management
+class FormManager {
+  constructor() {
+    this.form = document.getElementById('article-form');
+    this.editor = document.getElementById('article-content');
+    this.hiddenContent = document.getElementById('article-content-hidden');
+    this.mediaUpload = document.getElementById('media-upload');
+    this.mediaPreview = document.getElementById('media-preview');
+    this.submitButton = document.getElementById('submit-article');
+    this.errorMsg = document.getElementById('error-msg');
+    this.init();
+  }
+
+  init() {
+    // Form submission
+    if (this.form) {
+      this.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSubmit();
+      });
+    }
+
+    // Editor toolbar
+    this.setupEditor();
+
+    // Media upload
+    this.setupMediaUpload();
+
+    // Auto-save content
+    if (this.editor) {
+      this.editor.addEventListener('input', () => {
+        this.updateHiddenContent();
+      });
+    }
+
+    // Form validation
+    this.setupValidation();
+  }
+
+  setupEditor() {
+    const toolbar = document.getElementById('editor-toolbar');
+    if (!toolbar) return;
+
+    const buttons = toolbar.querySelectorAll('[data-command]');
+    buttons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const command = button.getAttribute('data-command');
+        
+        if (command === 'createLink') {
+          const url = prompt('Enter URL:');
+          if (url) {
+            document.execCommand(command, false, url);
+          }
+        } else {
+          document.execCommand(command, false, null);
+        }
+        
+        this.updateHiddenContent();
+      });
+    });
+  }
+
+  setupMediaUpload() {
+    if (!this.mediaUpload) return;
+
+    this.mediaUpload.addEventListener('change', (e) => {
+      this.handleMediaFiles(e.target.files);
+    });
+
+    // Drag and drop
+    const mediaUploader = document.querySelector('.media-uploader');
+    if (mediaUploader) {
+      mediaUploader.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        mediaUploader.style.borderColor = 'var(--primary-color)';
+      });
+
+      mediaUploader.addEventListener('dragleave', () => {
+        mediaUploader.style.borderColor = 'var(--border-color)';
+      });
+
+      mediaUploader.addEventListener('drop', (e) => {
+        e.preventDefault();
+        mediaUploader.style.borderColor = 'var(--border-color)';
+        this.handleMediaFiles(e.dataTransfer.files);
+      });
+    }
+  }
+
+  handleMediaFiles(files) {
+    if (!this.mediaPreview) return;
+
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = file.name;
+          this.mediaPreview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  updateHiddenContent() {
+    if (this.editor && this.hiddenContent) {
+      this.hiddenContent.value = this.editor.innerHTML;
+    }
+  }
+
+  setupValidation() {
+    if (!this.form) return;
+    
+    const inputs = this.form.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+      input.addEventListener('blur', () => {
+        this.validateField(input);
+      });
+
+      input.addEventListener('input', () => {
+        if (input.classList.contains('error')) {
+          this.validateField(input);
+        }
+      });
+    });
+  }
+
+  validateField(field) {
+    const value = field.value.trim();
+    const isRequired = field.hasAttribute('required');
+    
+    if (isRequired && !value) {
+      this.markFieldError(field, 'This field is required');
+      return false;
+    }
+
+    if (field.type === 'email' && value && !this.isValidEmail(value)) {
+      this.markFieldError(field, 'Please enter a valid email');
+      return false;
+    }
+
+    this.markFieldSuccess(field);
+    return true;
+  }
+
+  markFieldError(field, message) {
+    field.classList.remove('success');
+    field.classList.add('error');
+    
+    // Remove existing error message
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+      existingError.remove();
+    }
+
+    // Add new error message
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error text-light mt-1';
+    errorDiv.textContent = message;
+    errorDiv.style.color = 'var(--error-color)';
+    errorDiv.style.fontSize = '0.875rem';
+    field.parentNode.appendChild(errorDiv);
+  }
+
+  markFieldSuccess(field) {
+    field.classList.remove('error');
+    field.classList.add('success');
+    
+    // Remove error message
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+      existingError.remove();
+    }
+  }
+
+  isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  showError(message) {
+    if (this.errorMsg) {
+      this.errorMsg.textContent = message;
+      this.errorMsg.style.display = 'block';
+      this.errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  hideError() {
+    if (this.errorMsg) {
+      this.errorMsg.style.display = 'none';
+    }
+  }
+
+  setLoading(loading) {
+    if (this.submitButton) {
+      if (loading) {
+        this.submitButton.classList.add('loading');
+        this.submitButton.disabled = true;
+      } else {
+        this.submitButton.classList.remove('loading');
+        this.submitButton.disabled = false;
+      }
+    }
+  }
+
+  async handleSubmit() {
+    // Hide previous errors
+    this.hideError();
+
+    // Validate all fields
+    const inputs = this.form.querySelectorAll('.form-control[required]');
+    let isValid = true;
+
+    inputs.forEach(input => {
+      if (!this.validateField(input)) {
+        isValid = false;
+      }
+    });
+
+    // Check if content is provided
+    if (!this.editor.textContent.trim()) {
+      this.showError('Please provide article content');
+      this.editor.focus();
+      return;
+    }
+
+    if (!isValid) {
+      this.showError('Please fix the errors above');
+      return;
+    }
+
+    // Update hidden content
+    this.updateHiddenContent();
+
+    // Set loading state
+    this.setLoading(true);
+
+    try {
+      // Simulate API call
+      await this.simulateApiCall();
+      
+      // Success
+      this.showSuccess('Article saved successfully!');
+      
+      // Reset form after delay
+      setTimeout(() => {
+        this.form.reset();
+        this.editor.innerHTML = '';
+        this.mediaPreview.innerHTML = '';
+        this.hideError();
+      }, 2000);
+
+    } catch (error) {
+      this.showError('Failed to save article. Please try again.');
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async simulateApiCall() {
+    // Simulate network delay
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // 90% success rate for demo
+        if (Math.random() > 0.1) {
+          resolve();
+        } else {
+          reject(new Error('Network error'));
+        }
+      }, 1500);
+    });
+  }
+
+  showSuccess(message) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message mb-4';
+    successDiv.style.cssText = `
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--success-color);
+      color: var(--success-color);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    `;
+    successDiv.textContent = message;
+
+    // Insert at the top of the form
+    this.form.insertBefore(successDiv, this.form.firstChild);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+      successDiv.remove();
+    }, 3000);
+  }
+}
+
+// Animation Utils
+class AnimationUtils {
+  static fadeIn(element, duration = 300) {
+    element.style.opacity = '0';
+    element.style.display = 'block';
+    
+    let start = null;
+    function animate(timestamp) {
+      if (!start) start = timestamp;
+      const progress = timestamp - start;
+      const opacity = Math.min(progress / duration, 1);
+      
+      element.style.opacity = opacity;
+      
+      if (progress < duration) {
+        requestAnimationFrame(animate);
+      }
+    }
+    
+    requestAnimationFrame(animate);
+  }
+
+  static slideDown(element, duration = 300) {
+    element.style.height = '0px';
+    element.style.overflow = 'hidden';
+    element.style.display = 'block';
+    
+    const targetHeight = element.scrollHeight;
+    
+    let start = null;
+    function animate(timestamp) {
+      if (!start) start = timestamp;
+      const progress = timestamp - start;
+      const height = Math.min((progress / duration) * targetHeight, targetHeight);
+      
+      element.style.height = height + 'px';
+      
+      if (progress < duration) {
+        requestAnimationFrame(animate);
+      } else {
+        element.style.height = '';
+        element.style.overflow = '';
+      }
+    }
+    
+    requestAnimationFrame(animate);
+  }
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize all managers
+  new ThemeManager();
+  new MobileMenuManager();
+  new FormManager();
+
+  // Add smooth scrolling to all internal links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Add loading animation to page
+  document.body.style.opacity = '0';
+  AnimationUtils.fadeIn(document.body, 500);
+
+  // Initialize tooltips for form fields
+  const formLabels = document.querySelectorAll('.form-label');
+  formLabels.forEach(label => {
+    const input = document.querySelector(`#${label.getAttribute('for')}`);
+    if (input && input.hasAttribute('required')) {
+      label.innerHTML += ' <span style="color: var(--error-color);">*</span>';
+    }
+  });
+
+  // Add focus management for better keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      // Close mobile menu on escape
+      const mobileMenu = document.querySelector('.sidebar.open');
+      if (mobileMenu) {
+        mobileMenu.classList.remove('open');
+        const overlay = document.getElementById('mobile-overlay');
+        if (overlay) {
+          overlay.classList.remove('active');
+        }
+        document.body.style.overflow = '';
+      }
+    }
+  });
+
+  // Add print styles
+  const printStyles = document.createElement('style');
+  printStyles.textContent = `
+    @media print {
+      .sidebar, .header, .btn { display: none !important; }
+      .dashboard-content { margin-left: 0 !important; }
+      body { background: white !important; color: black !important; }
+    }
+  `;
+  document.head.appendChild(printStyles);
+
+  console.log('Admin Dashboard initialized successfully! 🚀');
+});
+</script>
